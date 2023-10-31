@@ -1,17 +1,26 @@
 package com.example.books
 
+import android.accounts.AuthenticatorDescription
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -58,57 +67,72 @@ import com.example.books.ui.theme.BooksTheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.BlendMode.Companion.Screen
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.VectorPainter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.android.engage.common.datamodel.Image
 import java.util.Vector
 
 //Helper class
+
 data class BottomNavItem(
     val title: String,
     val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
+    val unselectedIcon: ImageVector,
+    val route: String
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var selectedItem by remember { mutableStateOf(0) }
-
-            //Test functions
             bottomNavigationBar()
-            //ElevatedCardExample()
 
 
         }
     }
 }
 //Composables
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun bottomNavigationBar()
 {
 
-
+    val navController = rememberNavController()
     //List of nav items
     val items = listOf(
         BottomNavItem(
             title = "My Books",
             selectedIcon = Icons.Filled.Star,
             unselectedIcon = Icons.Outlined.Star,
+            route = "0"
         ),
         BottomNavItem(
             title = "Search",
             selectedIcon = Icons.Filled.Search,
             unselectedIcon = Icons.Outlined.Search,
+            route = "1"
         ),
         BottomNavItem(
             title = "My Books",
             selectedIcon = Icons.Filled.Info,
             unselectedIcon = Icons.Outlined.Info,
+            route = "2"
         )
     )
 
@@ -124,6 +148,7 @@ fun bottomNavigationBar()
                         selected = selectedItemIndex == index,
                         onClick = {
                             selectedItemIndex = index
+                            navController.navigate(item.route)
                         },
                         icon = {
 
@@ -139,9 +164,85 @@ fun bottomNavigationBar()
                 }
             }
         }
-    ) {
+    ){
 
+
+        //Nav hosts assigns routes to the composables
+        NavHost(navController = navController, startDestination = "0"){
+            composable(route = "0"){
+                PlaylistsScreen(navController)
+            }
+            composable(route = "1"){
+                SearchScreen(navController)
+            }
+            composable(route = "2"){
+                StatsScreen(navController)
+            }
+        }
     }
 }
+
+//Common Composable
+@Composable
+fun PlaylistCard(
+    //Parameters
+    painter: Painter,
+    contentDescription: String,
+    title: String,
+    modifier: Modifier = Modifier
+) {
+//Actual content
+    //Card
+    Card(
+        modifier = Modifier.wrapContentWidth(),
+        shape = RoundedCornerShape(15.dp),
+    ){
+        //text and iamge
+        Box(modifier = Modifier
+            .height(150.dp)
+            .width(150.dp)
+
+        ){
+            Image(painter = painter,
+                contentDescription = contentDescription,
+                contentScale = ContentScale.FillBounds
+            )
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
+                contentAlignment = Alignment.BottomStart
+            ){
+                Text(text = "Create Playlist", style = TextStyle(color = Color.White, fontSize = 16.sp))
+            }
+        }
+    }
+
+
+}
+
+
+//@Composable
+//fun playlistsScreen(
+//    navController: NavHostController
+//)
+//{
+//    Box(
+//        modifier = Modifier.fillMaxSize(),
+//        contentAlignment = Alignment.Center
+//    ){
+//        Text(
+//            text = "Home",
+//            color = Color.White,
+//            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+//            fontWeight = FontWeight.Bold
+//        )
+//    }
+//
+//    val Painter = painterResource(id = R.drawable.ic_launcher_foreground)
+//    val Description = "test"
+//    val test = "Create Playlist"
+//
+//
+//}
 
 
