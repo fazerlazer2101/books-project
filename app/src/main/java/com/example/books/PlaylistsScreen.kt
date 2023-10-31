@@ -15,11 +15,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
+import androidx.room.Database
+import com.example.books.database.BookDatabase
+import com.example.books.database.models.Books
+import com.example.books.database.models.Playlists
 
+private lateinit var db: BookDatabase
 @Composable
 fun PlaylistsScreen(
     navController: NavController
 ){
+    val context =LocalContext.current;
+    db = BookDatabase.getDatabase(context)
+
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -44,14 +53,12 @@ fun PlaylistsScreen(
 
 @Composable
 fun ElevatedButtonExample() {
+    val bookDao = db.BooksDao()
     val context =LocalContext.current;
     fun toast()
     {
-        val text = "Hello toast!"
-        val duration = Toast.LENGTH_SHORT
-
-        val toast = Toast.makeText(context , text, duration) // in Activity
-        toast.show()
+        val newBook = Playlists(uid= 1, playlistName = "test")
+        bookDao.createPlaylist(newBook)
     }
 
     ElevatedButton(onClick = { toast() }) {

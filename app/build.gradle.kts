@@ -1,6 +1,12 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 plugins {
+    var version = "1.9.10-1.0.13"
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+
+
 }
 
 android {
@@ -30,11 +36,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -50,8 +56,29 @@ android {
 }
 
 dependencies {
+
     val nav_version = "2.7.4"
     implementation("androidx.navigation:navigation-compose:$nav_version")
+    //Room implementation
+    /*
+    val room_version = "2.6.0"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    //implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    kapt("androidx.room:room-compiler:${room_version}")
+    implementation("androidx.room:room-coroutines:2.1.0-alpha04")
+    implementation("androidx.room:room-paging:$room_version")
+*/
+    val room_version = "2.5.2"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-coroutines:2.1.0-alpha04")
+
+    // To use Kotlin annotation processing tool (kapt)
+    kapt("androidx.room:room-compiler:$room_version")
+
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.0")
