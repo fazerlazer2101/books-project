@@ -99,4 +99,7 @@ dependencies {
 
     // Glide
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
+
+    // Volley
+    implementation("com.android.volley:volley:1.2.1")
 }
