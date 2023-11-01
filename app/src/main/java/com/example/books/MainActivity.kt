@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -100,8 +101,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             bottomNavigationBar()
-
-
         }
     }
 }
@@ -165,12 +164,10 @@ fun bottomNavigationBar()
             }
         }
     ){
-
-
         //Nav hosts assigns routes to the composables
         NavHost(navController = navController, startDestination = "0"){
             composable(route = "0"){
-                PlaylistsScreen(navController)
+                PlaylistsScreen(navController = navController)
             }
             composable(route = "1"){
                 SearchScreen(navController)
@@ -186,7 +183,6 @@ fun bottomNavigationBar()
 @Composable
 fun PlaylistCard(
     //Parameters
-    painter: Painter,
     contentDescription: String,
     title: String,
     modifier: Modifier = Modifier
@@ -203,46 +199,21 @@ fun PlaylistCard(
             .width(150.dp)
 
         ){
-            Image(painter = painter,
+            /*Image(painter = painter,
                 contentDescription = contentDescription,
                 contentScale = ContentScale.FillBounds
-            )
+            )*/
             Box(modifier = Modifier
                 .fillMaxSize()
                 .padding(12.dp),
                 contentAlignment = Alignment.BottomStart
             ){
-                Text(text = "Create Playlist", style = TextStyle(color = Color.White, fontSize = 16.sp))
+                Text(text = "${title}", style = TextStyle(color = Color.White, fontSize = 16.sp))
             }
         }
     }
 
 
 }
-
-
-//@Composable
-//fun playlistsScreen(
-//    navController: NavHostController
-//)
-//{
-//    Box(
-//        modifier = Modifier.fillMaxSize(),
-//        contentAlignment = Alignment.Center
-//    ){
-//        Text(
-//            text = "Home",
-//            color = Color.White,
-//            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-//            fontWeight = FontWeight.Bold
-//        )
-//    }
-//
-//    val Painter = painterResource(id = R.drawable.ic_launcher_foreground)
-//    val Description = "test"
-//    val test = "Create Playlist"
-//
-//
-//}
 
 
