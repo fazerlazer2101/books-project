@@ -5,16 +5,15 @@ import androidx.compose.ui.window.Popup
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
+/*
 @Composable
 fun nav()
 {
     val navController = rememberNavController()
 
-    //Nav hosts
-    NavHost(navController = navController, startDestination = "2"){
+    NavHost(navController = navController, startDestination = "0"){
         composable(route = "0"){
-            PlaylistsScreen(navController)
+            PlaylistsScreen(navController = navController,)
         }
         composable(route = "1"){
             SearchScreen(navController)
@@ -22,5 +21,9 @@ fun nav()
         composable(route = "2"){
             StatsScreen(navController)
         }
+        composable(route = "3"){
+            PlaylistDetailsScreen(navController)
+        }
     }
 }
+*/

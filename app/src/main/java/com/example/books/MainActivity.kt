@@ -9,11 +9,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,6 +42,7 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,6 +58,9 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -76,6 +83,9 @@ import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
@@ -85,6 +95,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.engage.common.datamodel.Image
 import java.util.Vector
+
 
 //Helper class
 
@@ -162,12 +173,14 @@ fun bottomNavigationBar()
 
                 }
             }
-        }
-    ){
+        },
+
+    ){innerPadding ->
+
         //Nav hosts assigns routes to the composables
         NavHost(navController = navController, startDestination = "0"){
             composable(route = "0"){
-                PlaylistsScreen(navController = navController)
+                PlaylistsScreen(navController = navController, innerPadding )
             }
             composable(route = "1"){
                 SearchScreen(navController)
@@ -175,45 +188,14 @@ fun bottomNavigationBar()
             composable(route = "2"){
                 StatsScreen(navController)
             }
-        }
-    }
-}
+            composable(route = "3"){
+                PlaylistDetailsScreen(navController)
 
-//Common Composable
-@Composable
-fun PlaylistCard(
-    //Parameters
-    contentDescription: String,
-    title: String,
-    modifier: Modifier = Modifier
-) {
-//Actual content
-    //Card
-    Card(
-        modifier = Modifier.wrapContentWidth(),
-        shape = RoundedCornerShape(15.dp),
-    ){
-        //text and iamge
-        Box(modifier = Modifier
-            .height(150.dp)
-            .width(150.dp)
 
-        ){
-            /*Image(painter = painter,
-                contentDescription = contentDescription,
-                contentScale = ContentScale.FillBounds
-            )*/
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp),
-                contentAlignment = Alignment.BottomStart
-            ){
-                Text(text = "${title}", style = TextStyle(color = Color.White, fontSize = 16.sp))
             }
         }
     }
-
-
 }
+
 
 

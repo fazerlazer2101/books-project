@@ -1,6 +1,7 @@
 package com.example.books.database.daos
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -13,6 +14,10 @@ interface BooksDao {
 
     @Query ("SELECT * FROM Playlists")
     fun getAllPlaylists(): List<Playlists>
+    //Inserts new Playlist
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun createPlaylist(playlist: Playlists)
+
+    @Delete
+    fun deletePlaylist(playlist: Playlists)
 }
