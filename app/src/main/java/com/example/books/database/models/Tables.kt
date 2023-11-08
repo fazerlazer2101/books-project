@@ -27,6 +27,7 @@ data class Contributor(
 
 @Entity(tableName = "Playlists")
 data class Playlists(
+
     @PrimaryKey(autoGenerate = true) val uid: Int,
     @ColumnInfo(name = "playlist_name") val playlistName: String
 )
@@ -54,7 +55,6 @@ data class Books(
     @ColumnInfo(name = "publish_date") val publish_date: Long,
     @ColumnInfo(name = "contributor_id") val contributor_id: Int,
     @ColumnInfo(name = "playlists_books_id") val playlists_books_id: Int,
-
 )
 
 @Entity(tableName = "Playlists_Books",
