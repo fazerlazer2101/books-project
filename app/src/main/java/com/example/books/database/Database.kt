@@ -32,7 +32,7 @@ abstract class BookDatabase: RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     BookDatabase::class.java,
-                    "book_database"
+                    "database"
                 )
                     .allowMainThreadQueries()
                     .build()

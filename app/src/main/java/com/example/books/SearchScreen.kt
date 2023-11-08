@@ -41,6 +41,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
+import com.example.books.database.BookDatabase
+import com.example.books.database.models.Books
+
+private lateinit var db: BookDatabase
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class,
     ExperimentalComposeUiApi::class
@@ -64,6 +68,15 @@ fun SearchScreen(
     }
     var isSavedVisible by remember {
         mutableStateOf(false)
+    }
+
+    db = BookDatabase.getDatabase(context);
+    val bookDao = db.BooksDao();
+
+    fun createBook() {
+        Toast.makeText(context, "Saved", Toast.LENGTH_SHORT)
+            .show()
+        bookDao.createBook(Books(uid = 0, title = bookTitle, subjects = "", isbn_10 = 0, isbn_13 = 0, number_of_pages = 0, publish_date = 0, contributor_id = 0))
     }
 
     Box(
@@ -132,7 +145,7 @@ fun SearchScreen(
                     )
                     Text(text = bookTitle)
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = { createBook() },
                         modifier = Modifier.alpha(if (isSavedVisible) 1f else 0f)
                     ) {
                         Text("Save")
@@ -141,8 +154,4 @@ fun SearchScreen(
             }
         }
     }
-
-
-
-
 }

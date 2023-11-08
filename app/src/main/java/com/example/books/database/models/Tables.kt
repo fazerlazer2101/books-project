@@ -40,10 +40,10 @@ data class Playlists(
             childColumns = ["contributor_id"],
             onDelete = CASCADE
         ),
-        ForeignKey(entity = Playlists_Books::class,
-            parentColumns = ["uid"],
-            childColumns = ["playlists_books_id"],
-            onDelete = CASCADE)
+        //ForeignKey(entity = Playlists_Books::class,
+            //parentColumns = ["uid"],
+            //childColumns = ["playlists_books_id"],
+            //onDelete = CASCADE)
     ])
 data class Books(
     @PrimaryKey(autoGenerate = true) val uid: Int,
@@ -54,7 +54,7 @@ data class Books(
     @ColumnInfo(name = "number_of_pages") val number_of_pages: Int,
     @ColumnInfo(name = "publish_date") val publish_date: Long,
     @ColumnInfo(name = "contributor_id") val contributor_id: Int,
-    @ColumnInfo(name = "playlists_books_id") val playlists_books_id: Int,
+    //@ColumnInfo(name = "playlists_books_id") val playlists_books_id: Int,
 )
 
 @Entity(tableName = "Playlists_Books",
@@ -62,6 +62,11 @@ data class Books(
         ForeignKey(entity = Playlists::class,
             parentColumns = ["uid"],
             childColumns = ["playlist_id"],
+            onDelete = CASCADE
+        ),
+        ForeignKey(entity = Books::class,
+            parentColumns = ["uid"],
+            childColumns = ["book_id"],
             onDelete = CASCADE)
     ])
 data class Playlists_Books(
