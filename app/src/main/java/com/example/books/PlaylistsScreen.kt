@@ -3,6 +3,7 @@ package com.example.books
 import android.annotation.SuppressLint
 import android.widget.GridLayout
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 
 import androidx.compose.foundation.layout.Box
@@ -47,12 +48,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.example.books.database.BookDatabase
 import com.example.books.database.daos.BooksDao
@@ -72,6 +76,8 @@ fun PlaylistsScreen(
 ){
     //Keeps track of dialog
     val isDialogOpen = remember { mutableStateOf(false) }
+
+
 
     //Database variables
     val context =LocalContext.current
@@ -112,7 +118,7 @@ fun PlaylistsScreen(
             ) {
 
                 items(listOfBooks) {item ->
-                    PlaylistCard(contentDescription = "Card", title = item.playlistName, navController = navController, booksDao = booksDao, playlistItem = item )
+                    PlaylistCard(contentDescription = "Card", title = item.playlistName, navController = navController, booksDao = booksDao, playlistItem = item, onRename = {showCustomDialog -> true})
                     Divider(modifier = Modifier)
                 }
 
@@ -133,7 +139,6 @@ fun PlaylistsScreen(
             //Needs error handling
 
             //Close Dialog
-
             //Inserts new playlist
             if(name.length > 0)
             {
@@ -148,6 +153,7 @@ fun PlaylistsScreen(
 
         }
 
+        //Create new Playlist
         Dialog(onDismissRequest = { isDialogOpen }) {
             Card(
                 modifier = Modifier
@@ -193,8 +199,6 @@ fun PlaylistsScreen(
             }
         }
     }
-
-
 }
 
 //Common Composable
@@ -207,6 +211,7 @@ fun PlaylistCard(
     modifier: Modifier = Modifier,
     booksDao: BooksDao,
     playlistItem: Playlists,
+    onRename: (Boolean) -> Unit,
     navController: NavController
 ) {
 
@@ -256,7 +261,7 @@ fun PlaylistCard(
                             contentDescription = "Localized description"
                         )
                         //List of options
-                        val listItems = arrayOf("Rename", "Delete")
+                        val listItems = arrayOf("Delete")
                         val contextForToast = LocalContext.current.applicationContext
                         //Sets menu into column
                         Column(modifier=Modifier) {
@@ -267,6 +272,7 @@ fun PlaylistCard(
                                         onClick = {
                                             //Deletes entry
                                             booksDao.deletePlaylist(playlistItem)
+
                                             //Refresh the composable
                                             navController.navigate("0")
                                             //Closes
