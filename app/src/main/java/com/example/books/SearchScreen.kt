@@ -36,6 +36,7 @@ import org.json.JSONArray
 import android.view.View
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalFocusManager
@@ -43,6 +44,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.books.database.BookDatabase
 import com.example.books.database.models.Books
+import com.example.books.database.models.Playlists
+import com.example.books.database.models.Playlists_Books
 
 private lateinit var db: BookDatabase
 
@@ -66,6 +69,21 @@ fun SearchScreen(
     var bookTitle by remember {
         mutableStateOf("")
     }
+    var subjects by remember {
+        mutableStateOf("")
+    }
+    var isbn10 by remember {
+        mutableStateOf("")
+    }
+    var isbn13 by remember {
+        mutableStateOf("")
+    }
+    var numberOfPages by remember {
+        mutableIntStateOf(0)
+    }
+    var publishDate by remember {
+        mutableStateOf("")
+    }
     var isSavedVisible by remember {
         mutableStateOf(false)
     }
@@ -76,7 +94,22 @@ fun SearchScreen(
     fun createBook() {
         Toast.makeText(context, "Saved", Toast.LENGTH_SHORT)
             .show()
-        bookDao.createBook(Books(uid = 0, title = bookTitle, subjects = "", isbn_10 = 0, isbn_13 = 0, number_of_pages = 0, publish_date = 0, contributor_id = 0))
+        bookDao.createBook(Books(uid = 0, title = bookTitle, subjects = subjects, isbn_10 = isbn10.toLong(), isbn_13 = isbn13.toLong(), number_of_pages = numberOfPages, publish_date = publishDate))
+
+        var playlists = bookDao.getAllPlaylists();
+        var saved = false;
+        for (playlist in playlists) {
+            if (playlist.playlistName == "Saved")
+            {
+                bookDao.addBookToPlaylist(Playlists_Books(uid = 0, playlist_id = playlist.uid, book_id = bookDao.getAllBooks().size))
+                saved = true;
+            }
+        }
+        if (!saved)
+        {
+            bookDao.createPlaylist(Playlists(uid = 0, playlistName = "Saved"))
+            bookDao.addBookToPlaylist(Playlists_Books(uid = 0, playlist_id = bookDao.getAllPlaylists().size, book_id = bookDao.getAllBooks().size))
+        }
     }
 
     Box(
@@ -120,6 +153,11 @@ fun SearchScreen(
                         
                         //Display book cover ID
                         bookTitle = response.getString("title")
+                        subjects = response.getJSONArray("subjects").toString()
+                        isbn10 = response.getJSONArray("isbn_10")[0].toString()
+                        isbn13 = response.getJSONArray("isbn_13")[0].toString()
+                        numberOfPages = response.getInt("number_of_pages")
+                        publishDate = response.getString("publish_date")
 
                         isSavedVisible = true
                     },//If an error occurs in fetching the data

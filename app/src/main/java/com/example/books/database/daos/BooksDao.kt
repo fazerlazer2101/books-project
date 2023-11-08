@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.books.database.models.Books
 import com.example.books.database.models.Playlists
+import com.example.books.database.models.Playlists_Books
 
 @Dao
 interface BooksDao {
@@ -29,5 +30,8 @@ interface BooksDao {
     fun createBook(book: Books)
 
     @Delete
-    fun deletePlaylist(book: Books)
+    fun deleteBook(book: Books)
+
+    @Insert
+    fun addBookToPlaylist(playlistsBooks: Playlists_Books)
 }
