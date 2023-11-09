@@ -153,7 +153,14 @@ fun SearchScreen(
                         
                         //Display book cover ID
                         bookTitle = response.getString("title")
-                        subjects = response.getJSONArray("subjects").toString()
+                        if (response.has("subjects"))
+                        {
+                            subjects = response.getJSONArray("subjects").toString()
+                        }
+                        else
+                        {
+                            subjects = ""
+                        }
                         isbn10 = response.getJSONArray("isbn_10")[0].toString()
                         isbn13 = response.getJSONArray("isbn_13")[0].toString()
                         numberOfPages = response.getInt("number_of_pages")
