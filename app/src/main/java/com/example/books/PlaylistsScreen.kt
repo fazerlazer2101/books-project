@@ -218,7 +218,7 @@ fun PlaylistCard(
             .padding(15.dp),
         shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-        onClick = ({navController.navigate("3")})
+        onClick = ({navController.navigate("3/${playlistItem.uid}")})
     ) {
         //text and iamge
         Box(

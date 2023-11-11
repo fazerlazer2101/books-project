@@ -22,9 +22,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
 
 //Helper class
@@ -118,8 +120,15 @@ fun bottomNavigationBar()
             composable(route = "2"){
                 StatsScreen(navController)
             }
-            composable(route = "3"){
-                PlaylistDetailsScreen(navController)
+            composable(route = "3/{playlist_id}", arguments = listOf(
+                navArgument("playlist_id")
+                {
+                    type = NavType.IntType
+                }
+            )
+            ){
+                val test = requireNotNull(it.arguments?.getInt("playlist_id"))
+                PlaylistDetailsScreen(navController, test)
             }
         }
     }
