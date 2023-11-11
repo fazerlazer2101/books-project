@@ -1,13 +1,10 @@
 package com.example.books
 
 import android.annotation.SuppressLint
-import android.widget.GridLayout
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -46,7 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -137,9 +133,7 @@ fun PlaylistsScreen(
             //Inserts new playlist
             if(name.length > 0)
             {
-                Toast.makeText(context, newPlaylistName, Toast.LENGTH_SHORT)
-                    .show()
-                val size = (booksDao.getAllPlaylists().size) + 1
+                Toast.makeText(context, "Created ${newPlaylistName}", Toast.LENGTH_SHORT).show()
 
                 //Create new instance of playlists
                 booksDao.createPlaylist(Playlists(uid = 0,playlistName = newPlaylistName))
@@ -256,7 +250,7 @@ fun PlaylistCard(
                             contentDescription = "Localized description"
                         )
                         //List of options
-                        val listItems = arrayOf("Rename", "Delete")
+                        val listItems = arrayOf("Delete")
                         val contextForToast = LocalContext.current.applicationContext
                         //Sets menu into column
                         Column(modifier=Modifier) {
@@ -265,12 +259,20 @@ fun PlaylistCard(
                                 listItems.forEachIndexed { itemIndex, itemValue ->
                                     DropdownMenuItem(
                                         onClick = {
-                                            //Deletes entry
-                                            booksDao.deletePlaylist(playlistItem)
-                                            //Refresh the composable
-                                            navController.navigate("0")
-                                            //Closes
-                                            expanded = false
+                                            if(playlistItem.playlistName != "Saved")
+                                            {
+                                                //Deletes entry
+                                                booksDao.deletePlaylist(playlistItem)
+                                                //Refresh the composable
+                                                navController.navigate("0")
+                                                //Closes
+                                                expanded = false
+                                            }
+                                            else
+                                            {
+                                                Toast.makeText(contextForToast, "Can't delete default playlist", Toast.LENGTH_SHORT).show()
+                                            }
+
                                         },
                                     ) {
                                         Text(text = itemValue)

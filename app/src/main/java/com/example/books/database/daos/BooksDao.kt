@@ -41,6 +41,7 @@ interface BooksDao {
     @Delete
     fun deleteBook(book: Books)
 
+
     //Adds books to playlists
     @Insert
     fun addBookToPlaylist(playlistsBooks: Playlists_Books)
