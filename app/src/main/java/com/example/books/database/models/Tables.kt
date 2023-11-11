@@ -6,7 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
 
-/**
+
 @Entity(tableName = "Contribution_Type")
 data class Contribution_Type(
     @PrimaryKey(autoGenerate = true) val uid: Int,
@@ -24,7 +24,7 @@ data class Contributor(
     @PrimaryKey(autoGenerate = true) val uid: Int,
     @ColumnInfo(name = "contribution_type_id") val contribution_type_id: Int
 )
-*/
+
 
 
 @Entity(tableName = "Playlists")
@@ -36,16 +36,12 @@ data class Playlists(
 
 //Book table
 @Entity(tableName = "Books",
-    /** foreignKeys = [
+     /*foreignKeys = [
         ForeignKey(entity = Contributor::class,
             parentColumns = ["uid"],
             childColumns = ["contributor_id"],
             onDelete = CASCADE
-        ),
-        //ForeignKey(entity = Playlists_Books::class,
-            //parentColumns = ["uid"],
-            //childColumns = ["playlists_books_id"],
-            //onDelete = CASCADE)
+        )
     ] */)
 data class Books(
     @PrimaryKey(autoGenerate = true) val uid: Int,
@@ -56,7 +52,6 @@ data class Books(
     @ColumnInfo(name = "number_of_pages") val number_of_pages: Int,
     @ColumnInfo(name = "publish_date") val publish_date: String,
     //@ColumnInfo(name = "contributor_id") val contributor_id: Int,
-    //@ColumnInfo(name = "playlists_books_id") val playlists_books_id: Int,
 )
 
 @Entity(tableName = "Playlists_Books",
