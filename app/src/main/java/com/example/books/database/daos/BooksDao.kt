@@ -49,4 +49,12 @@ interface BooksDao {
     //Gets a the uid of a playlist
     @Query("SELECT uid FROM Playlists WHERE playlist_name = 'Saved'")
     fun getSavedPlaylist(): Int
+
+
+    //Methods for a particular playlist
+
+    //Retrieve all books of a particular playlist
+    @Query("SELECT * FROM playlists_books pb INNER JOIN Books on pb.uid WHERE pb.playlist_id = :id")
+    fun getAllBooksInPlaylist(id: Int): List<Books>
+
 }
