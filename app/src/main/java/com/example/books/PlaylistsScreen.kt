@@ -224,7 +224,6 @@ fun PlaylistCard(
         Box(
             modifier = Modifier
                 .height(150.dp)
-
         ) {
             Box(
                 modifier = Modifier

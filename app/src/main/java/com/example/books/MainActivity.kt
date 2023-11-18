@@ -128,7 +128,7 @@ fun bottomNavigationBar()
             )
             ){
                 val test = requireNotNull(it.arguments?.getInt("playlist_id"))
-                PlaylistDetailsScreen(navController, test)
+                PlaylistDetailsScreen(navController, innerPadding, test)
             }
         }
     }
