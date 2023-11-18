@@ -1,5 +1,6 @@
 package com.example.books
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -93,7 +94,7 @@ fun SearchScreen(
             for (playlist in playlists) {
                 if (playlist.playlistName == "Saved")
                 {
-                    bookDao.createBook(Books(uid = 0, title = bookTitle, subjects = subjects, isbn_10 = isbn10.toLong(), isbn_13 = isbn13.toLong(), number_of_pages = numberOfPages, publish_date = publishDate))
+                    bookDao.createBook(Books(uid = 0, title = bookTitle, subjects = subjects, isbn_10 = isbn10, isbn_13 = isbn13, number_of_pages = numberOfPages, publish_date = publishDate))
                     bookDao.addBookToPlaylist(Playlists_Books(uid =0, playlist_id = bookDao.getSavedPlaylist(), book_id = bookDao.getBook(bookTitle).uid))
                     saved = true;
                 }
@@ -101,7 +102,7 @@ fun SearchScreen(
             if (!saved)
             {
                 bookDao.createPlaylist(Playlists(uid = 0, playlistName = "Saved"))
-                bookDao.createBook(Books(uid = 0, title = bookTitle, subjects = subjects, isbn_10 = isbn10.toLong(), isbn_13 = isbn13.toLong(), number_of_pages = numberOfPages, publish_date = publishDate))
+                bookDao.createBook(Books(uid = 0, title = bookTitle, subjects = subjects, isbn_10 = isbn10 , isbn_13 = isbn13, number_of_pages = numberOfPages, publish_date = publishDate))
                 bookDao.addBookToPlaylist(Playlists_Books(uid =0, playlist_id = bookDao.getSavedPlaylist(), book_id = bookDao.getBook(bookTitle).uid))
             }
         }
@@ -152,6 +153,8 @@ fun SearchScreen(
                         {
                             val responseJSON: JSONArray = response.getJSONArray("covers")
 
+
+
                             //Stores the cover ID
                             imageId = responseJSON.getString(0)
                             imageURL = "https://covers.openlibrary.org/b/id/${imageId}-L.jpg"
@@ -172,7 +175,8 @@ fun SearchScreen(
                         {
                             subjects = ""
                         }
-                        isbn10 = response.getJSONArray("isbn_10")[0].toString()
+                        isbn10 =response.getJSONArray("isbn_10")[0].toString()
+                        Log.d("ISBN10 Retrieval", "Value: ${isbn10}")
                         isbn13 = response.getJSONArray("isbn_13")[0].toString()
                         numberOfPages = response.getInt("number_of_pages")
                         publishDate = response.getString("publish_date")

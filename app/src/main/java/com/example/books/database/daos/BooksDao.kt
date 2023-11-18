@@ -57,4 +57,7 @@ interface BooksDao {
     @Query("SELECT DISTINCT b.title, b.publish_date, b.number_of_pages, b.isbn_10, b.isbn_13, b.subjects, b.uid FROM playlists_books pb INNER JOIN Books b on pb.uid WHERE pb.playlist_id = :id")
     fun getAllBooksInPlaylist(id: Int): List<Books>
 
+    @Query("SELECT * FROM playlists WHERE uid = :id")
+    fun getDetailsOfPlaylist(id: Int) : Playlists
+
 }
