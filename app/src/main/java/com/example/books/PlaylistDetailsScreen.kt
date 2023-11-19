@@ -3,7 +3,9 @@
 package com.example.books
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,13 +22,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,9 +49,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -118,7 +121,7 @@ fun PlaylistDetailsScreen(
 
                     items(listOfBooks) {item ->
 
-                        booksCards(item)
+                        booksCards(item, param)
                         Divider(modifier = Modifier)
                     }
 
@@ -133,8 +136,12 @@ fun PlaylistDetailsScreen(
 //Composable that will display the each book
 @Composable
 fun booksCards(
-    book: Books
+    book: Books,
+    playList_id: Int
 ) {
+    val context = LocalContext.current
+    db = BookDatabase.getDatabase(context)
+    val booksDao = db.BooksDao()
     //Keeps track of dialog
     val isDialogOpen = remember { mutableStateOf(false) }
 
@@ -152,7 +159,8 @@ fun booksCards(
             shape = RoundedCornerShape(15.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
-            Row {
+            Row(modifier = Modifier
+                .padding(0.dp)) {
                 //Contains image
                 GlideImage(
                     modifier = Modifier
@@ -165,12 +173,14 @@ fun booksCards(
 
                 Column(
                     modifier = Modifier
-                        .padding(start = 5.dp)
+                        .padding(start = 5.dp, top = 0.dp, bottom = 0.dp)
                 ) {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(0.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(text = book.title, modifier = Modifier
                             .fillMaxWidth(0.80F))
@@ -199,7 +209,7 @@ fun booksCards(
                                                 {
                                                     //Opens Dialog box
                                                     isDialogOpen.value = true;
-                                                }
+                                                    expanded = false;                                                }
                                                 else
                                                 {
                                                     Toast.makeText(contextForToast, "Delete Book", Toast.LENGTH_SHORT).show()
@@ -261,46 +271,70 @@ fun booksCards(
         {
         }
 
-        Dialog(onDismissRequest = { isDialogOpen }) {
+        Dialog(onDismissRequest = { isDialogOpen.value = false }, DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)) {
             Card(
                 modifier = Modifier
-                    .wrapContentWidth(),
+                    .wrapContentWidth()
+                    .height(300.dp),
                 shape = RoundedCornerShape(15.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
             ){
                 Box(modifier = Modifier
-                    .height(150.dp)
+                    .fillMaxHeight()
                     .width(200.dp)
 
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Row {
-                            Text(
-                                text = "Create New Playlist",
-                                modifier = Modifier
-                                    .padding(top = 5.dp),
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
-                        Row{
 
-                            OutlinedTextField(
+                ) {
+                    Column(modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Add to playlist",
                                 modifier = Modifier
-                                    .width(125.dp)
-                                    .padding(top = 10.dp),
-                                value = newPlaylistName,
-                                onValueChange = { newPlaylistName = it },
-                                singleLine = true,
+                                    .fillMaxWidth(),
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
                             )
                         }
-                        Row{
-                            TextButton(onClick = { isDialogOpen.value = false }) {
-                                Text(text = "Cancel")
-                            }
-                            TextButton(onClick = { newPlaylistCreated(newPlaylistName) }) {
-                                Text(text = "Create")
+                        Column {
+                            Row(modifier = Modifier
+                                .fillMaxWidth(0.75F)
+                                .fillMaxHeight(),){
+                                val listItems = booksDao.getAllPlaylistsExcludeSaved()
+                                val itemsAssigned = booksDao.getAllBooksAssigned()
+                                val contextForToast = LocalContext.current.applicationContext
+                                LazyColumn(modifier = Modifier
+                                ) {
+
+                                    items(listItems) {item ->
+                                        var (checkedState, onStateChange) = remember { mutableStateOf(false) }
+
+                                        if(booksDao.checksIfBookIsAssigned(item.uid, book.uid))
+                                        {
+                                            checkedState = true;
+                                        }
+
+                                        Row(modifier = Modifier
+                                            .clickable { onStateChange(!checkedState) }
+                                            .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+
+
+                                            Text(text = item.playlistName)
+                                            Checkbox(checked = checkedState, onCheckedChange = {onStateChange(!checkedState)
+
+                                                //Does the Add / Remove on playlist assignment
+                                                Log.d("Playlist", "Value: ${!checkedState}")
+                                            })
+                                        }
+                                        Divider(modifier = Modifier)
+                                    }
+                                }
+
                             }
                         }
+
+
                     }
                 }
             }

@@ -16,6 +16,9 @@ interface BooksDao {
 
     @Query ("SELECT * FROM Playlists")
     fun getAllPlaylists(): List<Playlists>
+
+    @Query ("SELECT * FROM Playlists WHERE playlist_name != 'Saved' ")
+    fun getAllPlaylistsExcludeSaved(): List<Playlists>
     //Inserts new Playlist
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun createPlaylist(playlist: Playlists)
@@ -59,5 +62,12 @@ interface BooksDao {
 
     @Query("SELECT * FROM playlists WHERE uid = :id")
     fun getDetailsOfPlaylist(id: Int) : Playlists
+
+    @Query("SELECT * FROM playlists_books")
+    fun getAllBooksAssigned() : List<Playlists_Books>
+
+    //Determines if a book is assigned to a particular playlist
+    @Query("SELECT * FROM playlists_books WHERE playlist_id = :playlist_id and book_id = :book_id")
+    fun checksIfBookIsAssigned(playlist_id: Int, book_id: Int) : Boolean
 
 }
