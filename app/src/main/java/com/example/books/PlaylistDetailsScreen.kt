@@ -15,10 +15,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
@@ -37,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +50,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -130,6 +135,9 @@ fun PlaylistDetailsScreen(
 fun booksCards(
     book: Books
 ) {
+    //Keeps track of dialog
+    val isDialogOpen = remember { mutableStateOf(false) }
+
     //Determines state of the menu
     var expanded by remember {
         mutableStateOf(false)
@@ -189,7 +197,8 @@ fun booksCards(
                                                 //Identifies by index of item which to run
                                                 if(itemIndex == 0 )
                                                 {
-                                                    Toast.makeText(contextForToast, "Move book to new playlist", Toast.LENGTH_SHORT).show()
+                                                    //Opens Dialog box
+                                                    isDialogOpen.value = true;
                                                 }
                                                 else
                                                 {
@@ -235,6 +244,64 @@ fun booksCards(
                     }
 
 
+                }
+            }
+        }
+    }
+
+    //Dialog box
+    if(isDialogOpen.value)
+    {
+        //Dialog box variables
+        var newPlaylistName by rememberSaveable { mutableStateOf("") }
+
+        //Needs text validation
+
+        fun newPlaylistCreated(name: String)
+        {
+        }
+
+        Dialog(onDismissRequest = { isDialogOpen }) {
+            Card(
+                modifier = Modifier
+                    .wrapContentWidth(),
+                shape = RoundedCornerShape(15.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
+            ){
+                Box(modifier = Modifier
+                    .height(150.dp)
+                    .width(200.dp)
+
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Row {
+                            Text(
+                                text = "Create New Playlist",
+                                modifier = Modifier
+                                    .padding(top = 5.dp),
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                        Row{
+
+                            OutlinedTextField(
+                                modifier = Modifier
+                                    .width(125.dp)
+                                    .padding(top = 10.dp),
+                                value = newPlaylistName,
+                                onValueChange = { newPlaylistName = it },
+                                singleLine = true,
+                            )
+                        }
+                        Row{
+                            TextButton(onClick = { isDialogOpen.value = false }) {
+                                Text(text = "Cancel")
+                            }
+                            TextButton(onClick = { newPlaylistCreated(newPlaylistName) }) {
+                                Text(text = "Create")
+                            }
+                        }
+                    }
                 }
             }
         }
