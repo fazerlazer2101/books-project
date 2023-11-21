@@ -4,7 +4,6 @@ package com.example.books
 
 import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,6 +58,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.books.database.BookDatabase
 import com.example.books.database.models.Books
+import com.example.books.database.models.Playlists_Books
 
 
 private lateinit var db: BookDatabase
@@ -75,6 +75,7 @@ fun PlaylistDetailsScreen(
     db = BookDatabase.getDatabase(context)
     val booksDao = db.BooksDao()
 
+    Log.d("playlist_id","Value: ${param}")
     Scaffold(modifier = Modifier.padding(innerPadding),
         topBar = {
             TopAppBar(
@@ -116,6 +117,7 @@ fun PlaylistDetailsScreen(
             ) {
                 //Retrieve list of books
                 val listOfBooks = booksDao.getAllBooksInPlaylist(id = param)
+                Log.d("playlist_id","Value: ${listOfBooks}")
                 LazyColumn(modifier = Modifier
                 ) {
 
@@ -212,7 +214,7 @@ fun booksCards(
                                                     expanded = false;                                                }
                                                 else
                                                 {
-                                                    Toast.makeText(contextForToast, "Delete Book", Toast.LENGTH_SHORT).show()
+                                                    booksDao.deleteBookInPlaylist(playlist_id = playList_id, book_id = book.uid )
                                                 }
                                             },
                                         ) {
@@ -301,30 +303,44 @@ fun booksCards(
                             Row(modifier = Modifier
                                 .fillMaxWidth(0.75F)
                                 .fillMaxHeight(),){
-                                val listItems = booksDao.getAllPlaylistsExcludeSaved()
-                                val itemsAssigned = booksDao.getAllBooksAssigned()
+                                //Excludes the default playlist
+                                val listItems = booksDao.getAllPlaylists()
+
                                 val contextForToast = LocalContext.current.applicationContext
                                 LazyColumn(modifier = Modifier
                                 ) {
 
                                     items(listItems) {item ->
-                                        var (checkedState, onStateChange) = remember { mutableStateOf(false) }
-
+                                        val checkedState = remember { mutableStateOf(false) }
+                                        //Checks if the book is already assigned to the playlist
                                         if(booksDao.checksIfBookIsAssigned(item.uid, book.uid))
                                         {
-                                            checkedState = true;
+                                            checkedState.value = true;
                                         }
 
                                         Row(modifier = Modifier
-                                            .clickable { onStateChange(!checkedState) }
+                                            .clickable { checkedState.value = !checkedState.value;}
                                             .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
 
 
                                             Text(text = item.playlistName)
-                                            Checkbox(checked = checkedState, onCheckedChange = {onStateChange(!checkedState)
-
+                                            Checkbox(checked = checkedState.value, onCheckedChange = {checkedState.value = !checkedState.value
                                                 //Does the Add / Remove on playlist assignment
-                                                Log.d("Playlist", "Value: ${!checkedState}")
+
+                                                if(checkedState.value)
+                                                {
+                                                    Log.d("Playlist", "Value: added")
+                                                    booksDao.assignBookToPlaylist(Playlists_Books(uid = 0, playlist_id = item.uid, book_id = book.uid))
+                                                    Log.d("Playlist", "Value: ${book.uid}")
+                                                }
+                                                else if (item.playlistName != "Saved")
+                                                {
+                                                    Log.d("Playlist", "Value: Delete ${checkedState}")
+                                                    Log.d("Playlist", "Value: checkedState")
+                                                    booksDao.deleteBookInPlaylist(playlist_id = item.uid, book_id = book.uid )
+
+                                                }
+
                                             })
                                         }
                                         Divider(modifier = Modifier)

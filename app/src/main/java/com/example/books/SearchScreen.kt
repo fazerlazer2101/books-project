@@ -129,7 +129,6 @@ fun SearchScreen(
             )
             Button(onClick = {
                 focusManager.clearFocus()
-
                 val url = "https://openlibrary.org/isbn/${searchable.trim()}.json"
 
                 // Loading image
@@ -144,6 +143,7 @@ fun SearchScreen(
                 val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
                     { response ->
 
+                        Log.d("url response", "Value: ${response}")
                         //Parse JSON
                         //Gets an array from json in the key called "covers"
 
@@ -153,8 +153,6 @@ fun SearchScreen(
                         {
                             val responseJSON: JSONArray = response.getJSONArray("covers")
 
-
-
                             //Stores the cover ID
                             imageId = responseJSON.getString(0)
                             imageURL = "https://covers.openlibrary.org/b/id/${imageId}-L.jpg"
@@ -163,7 +161,6 @@ fun SearchScreen(
                         {
                             imageURL = "None"
                         }
-
                         
                         //Display book cover ID
                         bookTitle = response.getString("title")
@@ -176,7 +173,6 @@ fun SearchScreen(
                             subjects = ""
                         }
                         isbn10 =response.getJSONArray("isbn_10")[0].toString()
-                        Log.d("ISBN10 Retrieval", "Value: ${isbn10}")
                         isbn13 = response.getJSONArray("isbn_13")[0].toString()
                         numberOfPages = response.getInt("number_of_pages")
                         publishDate = response.getString("publish_date")
@@ -184,6 +180,8 @@ fun SearchScreen(
                         isSavedVisible = true
                     },//If an error occurs in fetching the data
                     {
+                        Log.d("error", "${url}")
+                        Log.d("error", "${it}")
                         bookTitle = "Failed to load image"
                         isSavedVisible = false
                         toast.show()
@@ -191,6 +189,7 @@ fun SearchScreen(
 
                 // Add the request to the RequestQueue.
                 queue.add(jsonObjectRequest)
+                queue.start()
             }) {
                 Text("Search")
             }

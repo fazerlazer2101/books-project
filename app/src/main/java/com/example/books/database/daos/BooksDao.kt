@@ -57,7 +57,7 @@ interface BooksDao {
     //Methods for a particular playlist
 
     //Retrieve all books of a particular playlist
-    @Query("SELECT DISTINCT b.title, b.publish_date, b.number_of_pages, b.isbn_10, b.isbn_13, b.subjects, b.uid FROM playlists_books pb INNER JOIN Books b on pb.uid WHERE pb.playlist_id = :id")
+    @Query("SELECT DISTINCT b.title, b.publish_date, b.number_of_pages, b.isbn_10, b.isbn_13, b.subjects, b.uid FROM playlists_books pb INNER JOIN Books b on b.uid = pb.book_id WHERE pb.playlist_id = :id")
     fun getAllBooksInPlaylist(id: Int): List<Books>
 
     @Query("SELECT * FROM playlists WHERE uid = :id")
@@ -70,4 +70,11 @@ interface BooksDao {
     @Query("SELECT * FROM playlists_books WHERE playlist_id = :playlist_id and book_id = :book_id")
     fun checksIfBookIsAssigned(playlist_id: Int, book_id: Int) : Boolean
 
+    //Insert a new book in the playlist_books table
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    fun assignBookToPlaylist(playlistsBooks: Playlists_Books)
+
+    //Delete a book in the playlist_books table
+    @Query("DELETE FROM PLAYLISTS_BOOKS WHERE playlist_id = :playlist_id and book_id = :book_id")
+    fun deleteBookInPlaylist(playlist_id: Int, book_id: Int)
 }
