@@ -71,7 +71,7 @@ fun bottomNavigationBar()
             route = "1"
         ),
         BottomNavItem(
-            title = "My Books",
+            title = "Stats",
             selectedIcon = Icons.Filled.Info,
             unselectedIcon = Icons.Outlined.Info,
             route = "2"

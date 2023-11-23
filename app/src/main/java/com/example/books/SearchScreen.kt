@@ -143,11 +143,15 @@ fun SearchScreen(
                 val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
                     { response ->
 
-                        Log.d("url response", "Value: ${response}")
+                        Log.d("url response", "Value: ${url}")
                         //Parse JSON
                         //Gets an array from json in the key called "covers"
 
+//Parse JSON
+                        //Gets an array from json in the key called "covers"
+
                         var imageId: String = "No Cover Found"
+                        val responseJSON: JSONArray
 
                         if(response.has("covers"))
                         {
@@ -161,7 +165,7 @@ fun SearchScreen(
                         {
                             imageURL = "None"
                         }
-                        
+
                         //Display book cover ID
                         bookTitle = response.getString("title")
                         if (response.has("subjects"))
@@ -180,8 +184,6 @@ fun SearchScreen(
                         isSavedVisible = true
                     },//If an error occurs in fetching the data
                     {
-                        Log.d("error", "${url}")
-                        Log.d("error", "${it}")
                         bookTitle = "Failed to load image"
                         isSavedVisible = false
                         toast.show()
@@ -189,7 +191,7 @@ fun SearchScreen(
 
                 // Add the request to the RequestQueue.
                 queue.add(jsonObjectRequest)
-                queue.start()
+
             }) {
                 Text("Search")
             }
