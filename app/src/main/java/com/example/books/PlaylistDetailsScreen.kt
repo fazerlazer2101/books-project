@@ -4,6 +4,7 @@ package com.example.books
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,6 +60,9 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.books.database.BookDatabase
 import com.example.books.database.models.Books
 import com.example.books.database.models.Playlists_Books
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
+import com.journeyapps.barcodescanner.BarcodeEncoder
 
 
 private lateinit var db: BookDatabase
@@ -146,6 +150,7 @@ fun booksCards(
     val booksDao = db.BooksDao()
     //Keeps track of dialog
     val isDialogOpen = remember { mutableStateOf(false) }
+    val isDialogQROpen = remember { mutableStateOf(false) }
 
     //Determines state of the menu
     var expanded by remember {
@@ -215,7 +220,9 @@ fun booksCards(
                                                 }
                                                 else if(itemIndex == 2)
                                                 {
-
+                                                    //Opens Dialog box
+                                                    isDialogQROpen.value = true;
+                                                    expanded = false;
                                                 }
                                                 else
                                                 {
@@ -319,7 +326,7 @@ fun booksCards(
                                         }
 
                                         Row(modifier = Modifier
-                                            .clickable { checkedState.value = !checkedState.value;}
+                                            .clickable { checkedState.value = !checkedState.value; }
                                             .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
 
 
@@ -352,6 +359,48 @@ fun booksCards(
 
 
                     }
+                }
+            }
+        }
+    }
+    //Dialog box
+    if(isDialogQROpen.value)
+    {
+        Dialog(onDismissRequest = { isDialogQROpen.value = false }, DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)) {
+            Card(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .height(200.dp),
+                shape = RoundedCornerShape(15.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
+            ){
+                Box(modifier = Modifier
+                    .fillMaxHeight()
+                    .width(200.dp)
+                ) {
+                    val currentBook = book.isbn_10
+                    val isbn = "https://openlibrary.org/isbn/" + currentBook // Explicitly convert to String if needed
+                    val qrCodeSize = 500 // Set your desired QR code size
+
+                    val mWriter = MultiFormatWriter()
+                    val mMatrix = mWriter.encode(isbn, BarcodeFormat.QR_CODE, qrCodeSize, qrCodeSize)
+                    //Creates bitmap
+                    val mEncoder = BarcodeEncoder()
+                    val mBitmap = mEncoder.createBitmap(mMatrix)
+                    // Check if QR code was generated successfully
+                    if (mBitmap != null) {
+
+                        GlideImage(
+                            modifier = Modifier,
+                            model = mBitmap,
+                            contentDescription = "Book Cover",
+                            contentScale = ContentScale.FillBounds
+                        )
+                    } else {
+                        // Handle the case where QR code generation failed
+                        Toast.makeText(context, "Failed to generate QR code", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
             }
         }

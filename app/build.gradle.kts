@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
-
 plugins {
     var version = "1.9.10-1.0.13"
     id("com.android.application")
@@ -96,6 +94,9 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.compose.material:material:1.5.4")
+
+    implementation ("com.google.zxing:core:3.4.0")
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
 
     // Glide
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
