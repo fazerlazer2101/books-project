@@ -71,7 +71,6 @@ import com.example.books.database.models.Playlists
 import com.example.books.database.models.Playlists_Books
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
-import org.json.JSONArray
 
 
 private lateinit var db: BookDatabase
@@ -283,7 +282,7 @@ fun PlaylistsScreen(
         var isSavedVisible by remember {
             mutableStateOf(false)
         }
-        val alreadyRan = false
+        var alreadyRan = false
 
         fun createBook() {
 
@@ -335,9 +334,10 @@ fun PlaylistsScreen(
                 ) {
                     if(!alreadyRan)
                     {
+                        alreadyRan = true
                         //Volley data
-                        Log.d("sharedISBN", "${sharedISBN.value}")
-                        val url = "https://openlibrary.org/isbn/${sharedISBN.value}.json"
+                        Log.d("sharedISBN", "${sharedISBN.value.trim()}")
+                        val url = "https://openlibrary.org/isbn/${sharedISBN.value.trim()}.json"
 
                         // Loading image
                         imageURL = "https://media1.giphy.com/media/6036p0cTnjUrNFpAlr/giphy.gif?cid=ecf05e479j2w1xbpa3tk0fx0b5mo6nax6c74nd8ct4mk6b64&ep=v1_gifs_search&rid=giphy.gif&ct=g"
@@ -357,12 +357,15 @@ fun PlaylistsScreen(
 
                                 var imageId: String = "No Cover Found"
 
-                                if (response.has("covers")) {
-                                    val responseJSON: JSONArray = response.getJSONArray("covers")
 
-                                    //Stores the cover ID
-                                    imageId = responseJSON.getString(0)
-                                    imageURL = "https://covers.openlibrary.org/b/id/${imageId}-L.jpg"
+
+                                if (response.has("covers")) {
+                                    imageId = response.getJSONArray("covers").getString(0);
+                                    var imageurlCheck: String = "https://covers.openlibrary.org/b/id/${imageId}-L.jpg"
+
+                                    Log.d("Image response", response.has("covers").toString())
+                                    imageURL = imageurlCheck
+                                    Log.d("Image response", imageURL)
                                 } else {
                                     imageURL = "None"
                                 }
@@ -387,10 +390,12 @@ fun PlaylistsScreen(
                                 toast.show()
 
                             })
-
                         // Add the request to the RequestQueue.
                         queue.add(jsonObjectRequest)
-                        queue.start()
+                    }
+
+
+
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
@@ -398,6 +403,7 @@ fun PlaylistsScreen(
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 GlideImage(
                                     model = imageURL,
+
                                     contentDescription = "Book Cover"
                                 )
                                 Text(text = bookTitle)
@@ -411,16 +417,10 @@ fun PlaylistsScreen(
                         }
 
 
-                    }
                 }
             }
         }
-
-
     }
-
-
-
 }
 //Common Composable
 @OptIn(ExperimentalMaterial3Api::class)
