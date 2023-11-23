@@ -195,7 +195,7 @@ fun booksCards(
                                 contentDescription = "Localized description"
                             )
                             //List of options
-                            val listItems = arrayOf("Add to Playlist", "Delete")
+                            val listItems = arrayOf("Add to Playlist", "Delete", "Share")
                             val contextForToast = LocalContext.current.applicationContext
                             //Sets menu into column
                             Column(modifier = Modifier) {
@@ -211,7 +211,12 @@ fun booksCards(
                                                 {
                                                     //Opens Dialog box
                                                     isDialogOpen.value = true;
-                                                    expanded = false;                                                }
+                                                    expanded = false;
+                                                }
+                                                else if(itemIndex == 2)
+                                                {
+
+                                                }
                                                 else
                                                 {
                                                     booksDao.deleteBookInPlaylist(playlist_id = playList_id, book_id = book.uid )
@@ -267,11 +272,6 @@ fun booksCards(
         //Dialog box variables
         var newPlaylistName by rememberSaveable { mutableStateOf("") }
 
-        //Needs text validation
-
-        fun newPlaylistCreated(name: String)
-        {
-        }
 
         Dialog(onDismissRequest = { isDialogOpen.value = false }, DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)) {
             Card(

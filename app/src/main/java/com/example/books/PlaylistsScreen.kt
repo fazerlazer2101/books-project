@@ -1,6 +1,9 @@
 package com.example.books
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +26,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -49,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import com.example.books.database.BookDatabase
 import com.example.books.database.daos.BooksDao
@@ -74,8 +79,6 @@ fun PlaylistsScreen(
     db = BookDatabase.getDatabase(context)
     val booksDao = db.BooksDao()
 
-
-
 //Top Bar
     Scaffold(modifier = Modifier.padding(innerPadding),
         topBar = {
@@ -90,6 +93,27 @@ fun PlaylistsScreen(
                     IconButton(onClick = { isDialogOpen.value = true }) {
                         Icon(
                             imageVector = Icons.Filled.Add,
+                            contentDescription = "Localized description"
+                        )
+                    }
+                    IconButton(onClick = {
+                        Intent(Intent.ACTION_MAIN).also{
+                            //Only works on motorola 2023 edge
+                            it.`package` = "com.motorola.camera3"
+                            val Intent = it.`package`;
+
+                            try{
+                                startActivity(context,it,null)
+
+                            }catch (e:ActivityNotFoundException)
+                            {
+                                e.printStackTrace()
+                                Log.d("camera", "Failed")
+                            }
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Person,
                             contentDescription = "Localized description"
                         )
                     }
