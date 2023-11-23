@@ -369,17 +369,15 @@ fun booksCards(
         Dialog(onDismissRequest = { isDialogQROpen.value = false }, DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)) {
             Card(
                 modifier = Modifier
-                    .wrapContentWidth()
-                    .height(200.dp),
+,
                 shape = RoundedCornerShape(15.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
             ){
                 Box(modifier = Modifier
-                    .fillMaxHeight()
-                    .width(200.dp)
+
                 ) {
                     val currentBook = book.isbn_10
-                    val isbn = "https://openlibrary.org/isbn/" + currentBook // Explicitly convert to String if needed
+                    val isbn = currentBook // Explicitly convert to String if needed
                     val qrCodeSize = 500 // Set your desired QR code size
 
                     val mWriter = MultiFormatWriter()
