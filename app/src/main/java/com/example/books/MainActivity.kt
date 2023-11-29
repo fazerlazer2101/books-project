@@ -127,8 +127,8 @@ fun bottomNavigationBar()
                 }
             )
             ){
-                val test = requireNotNull(it.arguments?.getInt("playlist_id"))
-                PlaylistDetailsScreen(navController, innerPadding, test)
+                val playlistId = requireNotNull(it.arguments?.getInt("playlist_id"))
+                PlaylistDetailsScreen(navController, innerPadding, playlistId)
             }
         }
     }

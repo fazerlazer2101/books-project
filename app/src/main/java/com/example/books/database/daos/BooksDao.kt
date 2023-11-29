@@ -77,4 +77,7 @@ interface BooksDao {
     //Delete a book in the playlist_books table
     @Query("DELETE FROM PLAYLISTS_BOOKS WHERE playlist_id = :playlist_id and book_id = :book_id")
     fun deleteBookInPlaylist(playlist_id: Int, book_id: Int)
+
+    @Query("DELETE FROM Books WHERE uid = :book_id")
+    fun deleteBooksFromSavedPlaylist(book_id: Int)
 }

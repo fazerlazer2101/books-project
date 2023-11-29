@@ -104,7 +104,6 @@ fun PlaylistsScreen(
             sharedISBN .value = result.getContents();
             isDialogSharedBookOpen.value = true;
         }
-
     }
 
     //Scanner/camera option
@@ -139,8 +138,6 @@ fun PlaylistsScreen(
                     IconButton(onClick = {
 
                         getContent.launch(ScanOptions())
-
-
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Call,
@@ -155,7 +152,6 @@ fun PlaylistsScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-
         ) {
             //Retrieve list of books
             val listOfBooks = booksDao.getAllPlaylists()
@@ -255,9 +251,6 @@ fun PlaylistsScreen(
     //Dialog box
     if (isDialogSharedBookOpen.value) {
         //Variables
-        var searchable by remember {
-            mutableStateOf("")
-        }
         var imageURL by remember {
             mutableStateOf("")
         }
@@ -330,14 +323,13 @@ fun PlaylistsScreen(
                     modifier = Modifier
                         .fillMaxHeight()
                         .width(200.dp)
-
                 ) {
                     if(!alreadyRan)
                     {
                         alreadyRan = true
                         //Volley data
-                        Log.d("sharedISBN", "${sharedISBN.value.trim()}")
-                        val url = "https://openlibrary.org/isbn/${sharedISBN.value.trim()}.json"
+                        Log.d("sharedISBN", "${sharedISBN.value}")
+                        val url = "https://openlibrary.org/isbn/${sharedISBN.value}.json"
 
                         // Loading image
                         imageURL = "https://media1.giphy.com/media/6036p0cTnjUrNFpAlr/giphy.gif?cid=ecf05e479j2w1xbpa3tk0fx0b5mo6nax6c74nd8ct4mk6b64&ep=v1_gifs_search&rid=giphy.gif&ct=g"
@@ -377,8 +369,16 @@ fun PlaylistsScreen(
                                 } else {
                                     subjects = ""
                                 }
-                                isbn10 = response.getJSONArray("isbn_10")[0].toString()
-                                isbn13 = response.getJSONArray("isbn_13")[0].toString()
+                                if(response.has("isbn_10"))
+                                {
+                                    isbn10 =response.getJSONArray("isbn_10")[0].toString()
+                                }
+
+
+                                if(response.has("isbn_13"))
+                                {
+                                    isbn13 = response.getJSONArray("isbn_13")[0].toString()
+                                }
                                 numberOfPages = response.getInt("number_of_pages")
                                 publishDate = response.getString("publish_date")
 
