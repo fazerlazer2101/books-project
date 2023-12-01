@@ -31,7 +31,7 @@ abstract class BookDatabase: RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     BookDatabase::class.java,
-                    "books_database"
+                    "bookbase1"
                 )
                     .fallbackToDestructiveMigration()
                     .allowMainThreadQueries()

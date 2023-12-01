@@ -130,6 +130,16 @@ fun bottomNavigationBar()
                 val test = requireNotNull(it.arguments?.getInt("playlist_id"))
                 PlaylistDetailsScreen(navController, innerPadding, test)
             }
+            composable(route = "4/{book_id}", arguments = listOf(
+                navArgument("book_id")
+                {
+                    type = NavType.IntType
+                }
+            )
+            ){
+                val test = requireNotNull(it.arguments?.getInt("book_id"))
+                BookDetailsScreen(navController, innerPadding, test)
+            }
         }
     }
 }

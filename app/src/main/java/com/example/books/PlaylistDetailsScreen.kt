@@ -121,7 +121,7 @@ fun PlaylistDetailsScreen(
 
                     items(listOfBooks) {item ->
 
-                        booksCards(item, param)
+                        booksCards(item, param, navController)
                         Divider(modifier = Modifier)
                     }
 
@@ -134,10 +134,12 @@ fun PlaylistDetailsScreen(
 }
 
 //Composable that will display the each book
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun booksCards(
     book: Books,
-    playList_id: Int
+    playList_id: Int,
+    navController: NavController
 ) {
     val context = LocalContext.current
     db = BookDatabase.getDatabase(context)
@@ -157,7 +159,8 @@ fun booksCards(
                 .height(250.dp)
                 .padding(15.dp),
             shape = RoundedCornerShape(15.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
+            onClick = ({navController.navigate("4/${book.uid}")})
         ) {
             Row(modifier = Modifier
                 .padding(0.dp)) {

@@ -36,6 +36,9 @@ interface BooksDao {
     @Query("SELECT * FROM Books WHERE title = :book_title")
     fun checkExistingBook(book_title: String): Boolean
 
+    @Query("SELECT * FROM Books WHERE uid = :id")
+    fun getDetailsOfBook(id: Int) : Books
+
     //Creates a book
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun createBook(book: Books)
