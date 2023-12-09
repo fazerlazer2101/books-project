@@ -132,7 +132,7 @@ fun PlaylistsScreen(
                     IconButton(onClick = { isDialogOpen.value = true }) {
                         Icon(
                             imageVector = Icons.Filled.Add,
-                            contentDescription = "Localized description"
+                            contentDescription = "Create New playlist"
                         )
                     }
                     IconButton(onClick = {
@@ -141,7 +141,7 @@ fun PlaylistsScreen(
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Call,
-                            contentDescription = "Localized description"
+                            contentDescription = "Scan QR Code"
                         )
                     }
                 }
@@ -161,7 +161,7 @@ fun PlaylistsScreen(
 
                 items(listOfBooks) { item ->
                     PlaylistCard(
-                        contentDescription = "Card",
+                        contentDescription = "${item.playlistName} Card",
                         title = item.playlistName,
                         navController = navController,
                         booksDao = booksDao,
@@ -404,7 +404,7 @@ fun PlaylistsScreen(
                                 GlideImage(
                                     model = imageURL,
 
-                                    contentDescription = "Book Cover"
+                                    contentDescription = "${bookTitle} Cover"
                                 )
                                 Text(text = bookTitle)
                                 Button(
@@ -480,7 +480,7 @@ fun PlaylistCard(
                     IconButton({ expanded = true }) {
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
-                            contentDescription = "Localized description"
+                            contentDescription = "${title} Menu Icon"
                         )
                         //List of options
                         val listItems = arrayOf("Delete")

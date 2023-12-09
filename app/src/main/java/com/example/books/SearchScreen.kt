@@ -206,6 +206,7 @@ fun SearchScreen(
                 searchRequest(searchable)
             }) {
                 Text("Search")
+
             }
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -214,7 +215,7 @@ fun SearchScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     GlideImage(
                         model = imageURL,
-                        contentDescription = "Book Cover"
+                        contentDescription = "${bookTitle} Cover image"
                     )
                     Text(text = bookTitle)
                     Button(

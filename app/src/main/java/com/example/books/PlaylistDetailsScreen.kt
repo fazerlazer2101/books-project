@@ -92,7 +92,7 @@ fun PlaylistDetailsScreen(
                     IconButton(onClick = { navController.navigate("0") }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Localized description"
+                            contentDescription = "Back to Playlists"
                         )
                     }
                 }
@@ -185,7 +185,7 @@ fun booksCards(
                         .width(150.dp)
                         .height(225.dp),
                     model = "https://covers.openlibrary.org/b/ISBN/${thumbnailISBN}-M.jpg",
-                    contentDescription = "Book Cover",
+                    contentDescription = "${book.title} Cover",
                     contentScale = ContentScale.FillBounds
                 )
 
@@ -208,7 +208,7 @@ fun booksCards(
                                 .padding(0.dp),) {
                             Icon(
                                 imageVector = Icons.Filled.MoreVert,
-                                contentDescription = "Localized description"
+                                contentDescription = "${book.title} menu"
                             )
                             //List of options
                             val listItems = arrayOf("Add to Playlist", "Delete", "Share")
@@ -418,7 +418,7 @@ fun booksCards(
                         GlideImage(
                             modifier = Modifier,
                             model = mBitmap,
-                            contentDescription = "Book Cover",
+                            contentDescription = "${book.title} QR code",
                             contentScale = ContentScale.FillBounds
                         )
                     } else {
