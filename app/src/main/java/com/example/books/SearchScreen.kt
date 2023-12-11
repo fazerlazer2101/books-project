@@ -82,6 +82,7 @@ fun SearchScreen(
     db = BookDatabase.getDatabase(context);
     val bookDao = db.BooksDao();
 
+    // Saving books to a playlist, with validation.
     fun createBook() {
 
 

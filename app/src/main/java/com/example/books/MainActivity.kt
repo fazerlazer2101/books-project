@@ -78,7 +78,7 @@ fun bottomNavigationBar()
         )
     )
 
-    //Remebers item that is clicked
+    //Remembers item that is clicked
     var selectedItemIndex by rememberSaveable {
         mutableStateOf(0)
     }
