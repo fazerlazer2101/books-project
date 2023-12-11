@@ -59,6 +59,10 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.books.database.BookDatabase
 import com.example.books.database.models.Books
+import com.example.books.database.models.Playlists_Books
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.MultiFormatWriter
+import com.journeyapps.barcodescanner.BarcodeEncoder
 
 
 private lateinit var db: BookDatabase
@@ -88,7 +92,7 @@ fun PlaylistDetailsScreen(
                     IconButton(onClick = { navController.navigate("0") }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Localized description"
+                            contentDescription = "Back to Playlists"
                         )
                     }
                 }
@@ -116,6 +120,7 @@ fun PlaylistDetailsScreen(
             ) {
                 //Retrieve list of books
                 val listOfBooks = booksDao.getAllBooksInPlaylist(id = param)
+                Log.d("playlist_id","Value: ${listOfBooks}")
                 LazyColumn(modifier = Modifier
                 ) {
 
@@ -146,6 +151,7 @@ fun booksCards(
     val booksDao = db.BooksDao()
     //Keeps track of dialog
     val isDialogOpen = remember { mutableStateOf(false) }
+    val isDialogQROpen = remember { mutableStateOf(false) }
 
     //Determines state of the menu
     var expanded by remember {
@@ -164,13 +170,24 @@ fun booksCards(
         ) {
             Row(modifier = Modifier
                 .padding(0.dp)) {
+                //Determines which isbn to use for image
+                var thumbnailISBN = ""
+                if(book.isbn_10.length == 0)
+                {
+                    thumbnailISBN = book.isbn_13;
+                }
+                else
+                {
+                    thumbnailISBN = book.isbn_10;
+                }
+
                 //Contains image
                 GlideImage(
                     modifier = Modifier
                         .width(150.dp)
                         .height(225.dp),
-                    model = "https://covers.openlibrary.org/b/ISBN/${book.isbn_10}-M.jpg",
-                    contentDescription = "Book Cover",
+                    model = "https://covers.openlibrary.org/b/ISBN/${thumbnailISBN}-M.jpg",
+                    contentDescription = "${book.title} Cover",
                     contentScale = ContentScale.FillBounds
                 )
 
@@ -193,10 +210,10 @@ fun booksCards(
                                 .padding(0.dp),) {
                             Icon(
                                 imageVector = Icons.Filled.MoreVert,
-                                contentDescription = "Localized description"
+                                contentDescription = "${book.title} menu"
                             )
                             //List of options
-                            val listItems = arrayOf("Add to Playlist", "Delete")
+                            val listItems = arrayOf("Add to Playlist", "Delete", "Share")
                             val contextForToast = LocalContext.current.applicationContext
                             //Sets menu into column
                             Column(modifier = Modifier) {
@@ -212,10 +229,27 @@ fun booksCards(
                                                 {
                                                     //Opens Dialog box
                                                     isDialogOpen.value = true;
-                                                    expanded = false;                                                }
+                                                    expanded = false;
+                                                }
+                                                else if(itemIndex == 2)
+                                                {
+                                                    //Opens Dialog box
+                                                    isDialogQROpen.value = true;
+                                                    expanded = false;
+                                                }
                                                 else
                                                 {
-                                                    Toast.makeText(contextForToast, "Delete Book", Toast.LENGTH_SHORT).show()
+                                                    if(playList_id == booksDao.getSavedPlaylist())
+                                                    {
+                                                        Toast.makeText(context, "Deleted books", Toast.LENGTH_SHORT).show()
+                                                        booksDao.deleteBooksFromSavedPlaylist(book.uid)
+                                                    }
+                                                    else
+                                                    {
+                                                        booksDao.deleteBookInPlaylist(playlist_id = playList_id, book_id = book.uid )
+                                                    }
+
+                                                    navController.navigate("3/${playList_id}")
                                                 }
                                             },
                                         ) {
@@ -262,17 +296,12 @@ fun booksCards(
         }
     }
 
-    //Dialog box
+    //Dialog box for reassign
     if(isDialogOpen.value)
     {
         //Dialog box variables
         var newPlaylistName by rememberSaveable { mutableStateOf("") }
 
-        //Needs text validation
-
-        fun newPlaylistCreated(name: String)
-        {
-        }
 
         Dialog(onDismissRequest = { isDialogOpen.value = false }, DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)) {
             Card(
@@ -304,30 +333,42 @@ fun booksCards(
                             Row(modifier = Modifier
                                 .fillMaxWidth(0.75F)
                                 .fillMaxHeight(),){
-                                val listItems = booksDao.getAllPlaylistsExcludeSaved()
-                                val itemsAssigned = booksDao.getAllBooksAssigned()
+                                //Excludes the default playlist
+                                val listItems = booksDao.getAllPlaylists()
+
                                 val contextForToast = LocalContext.current.applicationContext
                                 LazyColumn(modifier = Modifier
                                 ) {
 
                                     items(listItems) {item ->
-                                        var (checkedState, onStateChange) = remember { mutableStateOf(false) }
-
+                                        val checkedState = remember { mutableStateOf(false) }
+                                        //Checks if the book is already assigned to the playlist
                                         if(booksDao.checksIfBookIsAssigned(item.uid, book.uid))
                                         {
-                                            checkedState = true;
+                                            checkedState.value = true;
                                         }
 
                                         Row(modifier = Modifier
-                                            .clickable { onStateChange(!checkedState) }
+                                            .clickable { checkedState.value = !checkedState.value; }
                                             .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
 
 
                                             Text(text = item.playlistName)
-                                            Checkbox(checked = checkedState, onCheckedChange = {onStateChange(!checkedState)
-
+                                            Checkbox(checked = checkedState.value, onCheckedChange = {checkedState.value = !checkedState.value
                                                 //Does the Add / Remove on playlist assignment
-                                                Log.d("Playlist", "Value: ${!checkedState}")
+                                                if(checkedState.value)
+                                                {
+                                                    //Assigns
+                                                    booksDao.assignBookToPlaylist(Playlists_Books(uid = 0, playlist_id = item.uid, book_id = book.uid))
+                                                }
+                                                //Verifies that the playlist select is not the default playlist
+                                                else if (item.playlistName != "Saved")
+                                                {
+                                                    //Deletes from playlist
+                                                    booksDao.deleteBookInPlaylist(playlist_id = item.uid, book_id = book.uid )
+
+                                                }
+
                                             })
                                         }
                                         Divider(modifier = Modifier)
@@ -339,6 +380,54 @@ fun booksCards(
 
 
                     }
+                }
+            }
+        }
+    }
+    //Dialog box for QR code
+    if(isDialogQROpen.value)
+    {
+        Dialog(onDismissRequest = { isDialogQROpen.value = false }, DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)) {
+            Card(
+                modifier = Modifier
+,
+                shape = RoundedCornerShape(15.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
+            ){
+                Box(modifier = Modifier
+
+                ) {
+                    var bookISBN = ""
+                    if(book.isbn_10.length == 0)
+                    {
+                        bookISBN = book.isbn_13;
+                    }
+                    else
+                    {
+                        bookISBN = book.isbn_10;
+                    }
+                    val isbn = bookISBN// Explicitly convert to String if needed
+                    val qrCodeSize = 500 // Set your desired QR code size
+
+                    val mWriter = MultiFormatWriter()
+                    val mMatrix = mWriter.encode(isbn, BarcodeFormat.QR_CODE, qrCodeSize, qrCodeSize)
+                    //Creates bitmap
+                    val mEncoder = BarcodeEncoder()
+                    val mBitmap = mEncoder.createBitmap(mMatrix)
+                    // Check if QR code was generated successfully
+                    if (mBitmap != null) {
+
+                        GlideImage(
+                            modifier = Modifier,
+                            model = mBitmap,
+                            contentDescription = "${book.title} QR code",
+                            contentScale = ContentScale.FillBounds
+                        )
+                    } else {
+                        // Handle the case where QR code generation failed
+                        Toast.makeText(context, "Failed to generate QR code", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
             }
         }

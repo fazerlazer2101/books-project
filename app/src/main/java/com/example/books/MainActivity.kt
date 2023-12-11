@@ -62,6 +62,7 @@ fun bottomNavigationBar()
             title = "My Books",
             selectedIcon = Icons.Filled.Star,
             unselectedIcon = Icons.Outlined.Star,
+
             route = "0"
         ),
         BottomNavItem(
@@ -71,7 +72,7 @@ fun bottomNavigationBar()
             route = "1"
         ),
         BottomNavItem(
-            title = "My Books",
+            title = "My Stats",
             selectedIcon = Icons.Filled.Info,
             unselectedIcon = Icons.Outlined.Info,
             route = "2"
@@ -100,7 +101,7 @@ fun bottomNavigationBar()
                                 Icon(item.unselectedIcon, contentDescription = item.title)
                             }
 
-                        }
+                        },
                     )
 
                 }
@@ -127,8 +128,8 @@ fun bottomNavigationBar()
                 }
             )
             ){
-                val test = requireNotNull(it.arguments?.getInt("playlist_id"))
-                PlaylistDetailsScreen(navController, innerPadding, test)
+                val playlistId = requireNotNull(it.arguments?.getInt("playlist_id"))
+                PlaylistDetailsScreen(navController, innerPadding, playlistId)
             }
             composable(route = "4/{book_id}", arguments = listOf(
                 navArgument("book_id")
