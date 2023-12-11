@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -55,7 +57,7 @@ fun BookDetailsScreen(
     val book = booksDao.getDetailsOfBook(param)
 
     var status by remember {
-        mutableStateOf("")
+        mutableStateOf("Unread")
     }
     var pageNumber by remember {
         mutableStateOf("")
@@ -113,19 +115,10 @@ fun BookDetailsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Status: ")
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp),
-                    value = status,
-                    placeholder = { Text("Status...") },
-                    onValueChange = { status = it },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-                )
+                Text(text = "Status: ${status}")
             }
             Row(
                 modifier = Modifier
@@ -141,10 +134,32 @@ fun BookDetailsScreen(
                         .padding(end = 8.dp),
                     value = pageNumber,
                     placeholder = { Text("Page Number...") },
-                    onValueChange = { pageNumber = it },
+                    onValueChange = {
+                        pageNumber = it
+                        status = if (pageNumber == "0") {
+                            "Unread"
+                        } else if (pageNumber.toInt() < book.number_of_pages) {
+                            "In Progress"
+                        } else {
+                            "Read"
+                        }
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
                 Text(text = "/${book.number_of_pages.toString()}")
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = {}
+                ) {
+                    Text("Save")
+                }
             }
         }
     }

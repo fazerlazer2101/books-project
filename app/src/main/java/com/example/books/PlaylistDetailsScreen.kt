@@ -139,7 +139,7 @@ fun PlaylistDetailsScreen(
 }
 
 //Composable that will display the each book
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun booksCards(
     book: Books,
