@@ -166,7 +166,7 @@ fun booksCards(
                 .padding(15.dp),
             shape = RoundedCornerShape(15.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
-            onClick = ({navController.navigate("4/${book.uid}")})
+            onClick = ({navController.navigate("4/${playList_id}-${book.uid}")})
         ) {
             Row(modifier = Modifier
                 .padding(0.dp)) {
@@ -243,6 +243,7 @@ fun booksCards(
                                                     {
                                                         Toast.makeText(context, "Deleted books", Toast.LENGTH_SHORT).show()
                                                         booksDao.deleteBooksFromSavedPlaylist(book.uid)
+                                                        booksDao.deleteBookDetails(book.uid)
                                                     }
                                                     else
                                                     {

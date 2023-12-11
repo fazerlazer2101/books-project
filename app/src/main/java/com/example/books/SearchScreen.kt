@@ -33,6 +33,7 @@ import com.android.volley.toolbox.Volley
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.books.database.BookDatabase
+import com.example.books.database.models.Book_Details
 import com.example.books.database.models.Books
 import com.example.books.database.models.Playlists
 import com.example.books.database.models.Playlists_Books
@@ -96,6 +97,7 @@ fun SearchScreen(
                 if (playlist.playlistName == "Saved")
                 {
                     bookDao.createBook(Books(uid = 0, title = bookTitle, subjects = subjects, isbn_10 = isbn10, isbn_13 = isbn13, number_of_pages = numberOfPages, publish_date = publishDate))
+                    bookDao.upsertBookDetails(Book_Details(uid = 0, book_id = bookDao.getBook(bookTitle).uid, status = "Unread", current_page_number = 0, total_page_number = numberOfPages))
                     bookDao.addBookToPlaylist(Playlists_Books(uid =0, playlist_id = bookDao.getSavedPlaylist(), book_id = bookDao.getBook(bookTitle).uid))
                     saved = true;
                 }
@@ -104,6 +106,7 @@ fun SearchScreen(
             {
                 bookDao.createPlaylist(Playlists(uid = 0, playlistName = "Saved"))
                 bookDao.createBook(Books(uid = 0, title = bookTitle, subjects = subjects, isbn_10 = isbn10 , isbn_13 = isbn13, number_of_pages = numberOfPages, publish_date = publishDate))
+                bookDao.upsertBookDetails(Book_Details(uid = 0, book_id = bookDao.getBook(bookTitle).uid, status = "Unread", current_page_number = 0, total_page_number = numberOfPages))
                 bookDao.addBookToPlaylist(Playlists_Books(uid =0, playlist_id = bookDao.getSavedPlaylist(), book_id = bookDao.getBook(bookTitle).uid))
             }
         }
