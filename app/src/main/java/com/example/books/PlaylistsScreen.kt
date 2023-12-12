@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -70,6 +72,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.books.database.BookDatabase
 import com.example.books.database.daos.BooksDao
+import com.example.books.database.models.Book_Details
 import com.example.books.database.models.Books
 import com.example.books.database.models.Playlists
 import com.example.books.database.models.Playlists_Books
@@ -126,6 +129,7 @@ fun PlaylistsScreen(
     Scaffold(modifier = Modifier.padding(innerPadding),
         topBar = {
             TopAppBar(
+                modifier = Modifier,
                 title = {
                     Text(
                         "Playlists",
@@ -293,6 +297,7 @@ fun PlaylistsScreen(
                     if (playlist.playlistName == "Saved")
                     {
                         booksDao.createBook(Books(uid = 0, title = bookTitle, subjects = subjects, isbn_10 = isbn10, isbn_13 = isbn13, number_of_pages = numberOfPages, publish_date = publishDate))
+                        booksDao.upsertBookDetails(Book_Details(uid = 0, book_id = booksDao.getBook(bookTitle).uid, status = "Unread", current_page_number = 0, total_page_number = numberOfPages))
                         booksDao.addBookToPlaylist(Playlists_Books(uid =0, playlist_id = booksDao.getSavedPlaylist(), book_id = booksDao.getBook(bookTitle).uid))
                         saved = true;
                     }
@@ -301,6 +306,7 @@ fun PlaylistsScreen(
                 {
                     booksDao.createPlaylist(Playlists(uid = 0, playlistName = "Saved"))
                     booksDao.createBook(Books(uid = 0, title = bookTitle, subjects = subjects, isbn_10 = isbn10 , isbn_13 = isbn13, number_of_pages = numberOfPages, publish_date = publishDate))
+                    booksDao.upsertBookDetails(Book_Details(uid = 0, book_id = booksDao.getBook(bookTitle).uid, status = "Unread", current_page_number = 0, total_page_number = numberOfPages))
                     booksDao.addBookToPlaylist(Playlists_Books(uid =0, playlist_id = booksDao.getSavedPlaylist(), book_id = booksDao.getBook(bookTitle).uid))
                 }
             }

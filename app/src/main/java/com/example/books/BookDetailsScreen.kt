@@ -77,7 +77,7 @@ fun BookDetailsScreen(
     }
 
     //Determines Intial state of status
-    status =bookDetails.status
+    status = bookDetails.status
 
     fun upsertBookDetails() {
         if (bookDetails != null)
