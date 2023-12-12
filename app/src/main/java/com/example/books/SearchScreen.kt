@@ -33,6 +33,7 @@ import com.android.volley.toolbox.Volley
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.books.database.BookDatabase
+import com.example.books.database.models.Book_Details
 import com.example.books.database.models.Books
 import com.example.books.database.models.Playlists
 import com.example.books.database.models.Playlists_Books
@@ -48,9 +49,10 @@ fun SearchScreen(
     navController: NavController
 ){
     val context = LocalContext.current;
-    val queue = Volley.newRequestQueue(context)
+
     val focusManager = LocalFocusManager.current
     val padding = 16.dp
+
     var searchable by remember {
         mutableStateOf("")
     }
@@ -96,6 +98,7 @@ fun SearchScreen(
                 if (playlist.playlistName == "Saved")
                 {
                     bookDao.createBook(Books(uid = 0, title = bookTitle, subjects = subjects, isbn_10 = isbn10, isbn_13 = isbn13, number_of_pages = numberOfPages, publish_date = publishDate))
+                    bookDao.upsertBookDetails(Book_Details(uid = 0, book_id = bookDao.getBook(bookTitle).uid, status = "Unread", current_page_number = 0, total_page_number = numberOfPages))
                     bookDao.addBookToPlaylist(Playlists_Books(uid =0, playlist_id = bookDao.getSavedPlaylist(), book_id = bookDao.getBook(bookTitle).uid))
                     saved = true;
                 }
@@ -104,6 +107,7 @@ fun SearchScreen(
             {
                 bookDao.createPlaylist(Playlists(uid = 0, playlistName = "Saved"))
                 bookDao.createBook(Books(uid = 0, title = bookTitle, subjects = subjects, isbn_10 = isbn10 , isbn_13 = isbn13, number_of_pages = numberOfPages, publish_date = publishDate))
+                bookDao.upsertBookDetails(Book_Details(uid = 0, book_id = bookDao.getBook(bookTitle).uid, status = "Unread", current_page_number = 0, total_page_number = numberOfPages))
                 bookDao.addBookToPlaylist(Playlists_Books(uid =0, playlist_id = bookDao.getSavedPlaylist(), book_id = bookDao.getBook(bookTitle).uid))
             }
         }
@@ -113,6 +117,80 @@ fun SearchScreen(
                 .show()
         }
     }
+
+    fun searchRequest(isbn: String)
+    {
+        val queue = Volley.newRequestQueue(context)
+        val url = "https://openlibrary.org/isbn/${isbn}.json"
+        Log.d("testing", url)
+
+        // Loading image
+        imageURL = "https://media1.giphy.com/media/6036p0cTnjUrNFpAlr/giphy.gif?cid=ecf05e479j2w1xbpa3tk0fx0b5mo6nax6c74nd8ct4mk6b64&ep=v1_gifs_search&rid=giphy.gif&ct=g"
+
+        val text = "Failed to load image"
+        val duration = Toast.LENGTH_SHORT
+
+        val toast = Toast.makeText(context, text, duration) // in Activity
+
+        //Retrieves jsonObject
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
+            { response ->
+
+                //Parse JSON
+                //Gets an array from json in the key called "covers"
+
+                var imageId: String = "No Cover Found"
+
+                if(response.has("covers"))
+                {
+                    val responseJSON: JSONArray = response.getJSONArray("covers")
+
+                    //Stores the cover ID
+                    imageId = responseJSON.getString(0)
+                    imageURL = "https://covers.openlibrary.org/b/id/${imageId}-L.jpg"
+                }
+                else
+                {
+                    imageURL = "None"
+                }
+
+                //Display book cover ID
+                bookTitle = response.getString("title")
+                if (response.has("subjects"))
+                {
+                    subjects = response.getJSONArray("subjects").toString()
+                }
+                else
+                {
+                    subjects = ""
+                }
+                if(response.has("isbn_10"))
+                {
+                    isbn10 =response.getJSONArray("isbn_10")[0].toString()
+                }
+
+
+                if(response.has("isbn_13"))
+                {
+                    isbn13 = response.getJSONArray("isbn_13")[0].toString()
+                }
+
+                numberOfPages = response.getInt("number_of_pages")
+                publishDate = response.getString("publish_date")
+
+                isSavedVisible = true
+            },//If an error occurs in fetching the data
+            {VolleyError ->
+                Log.d("errorVolley", "Value: ${VolleyError}")
+                bookTitle = "Failed to load image"
+                isSavedVisible = false
+                toast.show()
+            })
+
+        // Add the request to the RequestQueue.
+        queue.add(jsonObjectRequest)
+    }
+
 
     Box(
         modifier = Modifier
@@ -129,70 +207,10 @@ fun SearchScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
             Button(onClick = {
-                focusManager.clearFocus()
-                val url = "https://openlibrary.org/isbn/${searchable.trim()}.json"
-
-                // Loading image
-                imageURL = "https://media1.giphy.com/media/6036p0cTnjUrNFpAlr/giphy.gif?cid=ecf05e479j2w1xbpa3tk0fx0b5mo6nax6c74nd8ct4mk6b64&ep=v1_gifs_search&rid=giphy.gif&ct=g"
-
-                val text = "Failed to load image"
-                val duration = Toast.LENGTH_SHORT
-
-                val toast = Toast.makeText(context, text, duration) // in Activity
-
-                //Retrieves jsonObject
-                val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
-                    { response ->
-
-                        Log.d("url response", "Value: ${response}")
-                        //Parse JSON
-                        //Gets an array from json in the key called "covers"
-
-                        var imageId: String = "No Cover Found"
-
-                        if(response.has("covers"))
-                        {
-                            val responseJSON: JSONArray = response.getJSONArray("covers")
-
-                            //Stores the cover ID
-                            imageId = responseJSON.getString(0)
-                            imageURL = "https://covers.openlibrary.org/b/id/${imageId}-L.jpg"
-                        }
-                        else
-                        {
-                            imageURL = "None"
-                        }
-                        
-                        //Display book cover ID
-                        bookTitle = response.getString("title")
-                        if (response.has("subjects"))
-                        {
-                            subjects = response.getJSONArray("subjects").toString()
-                        }
-                        else
-                        {
-                            subjects = ""
-                        }
-                        isbn10 =response.getJSONArray("isbn_10")[0].toString()
-                        isbn13 = response.getJSONArray("isbn_13")[0].toString()
-                        numberOfPages = response.getInt("number_of_pages")
-                        publishDate = response.getString("publish_date")
-
-                        isSavedVisible = true
-                    },//If an error occurs in fetching the data
-                    {
-                        Log.d("error", "${url}")
-                        Log.d("error", "${it}")
-                        bookTitle = "Failed to load image"
-                        isSavedVisible = false
-                        toast.show()
-                    })
-
-                // Add the request to the RequestQueue.
-                queue.add(jsonObjectRequest)
-                queue.start()
+                searchRequest(searchable)
             }) {
                 Text("Search")
+
             }
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -201,7 +219,7 @@ fun SearchScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     GlideImage(
                         model = imageURL,
-                        contentDescription = "Book Cover"
+                        contentDescription = "${bookTitle} Cover image"
                     )
                     Text(text = bookTitle)
                     Button(

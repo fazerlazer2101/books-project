@@ -5,6 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
+import com.example.books.database.models.Book_Details
 import com.example.books.database.models.Books
 import com.example.books.database.models.Playlists
 import com.example.books.database.models.Playlists_Books
@@ -36,6 +38,9 @@ interface BooksDao {
     @Query("SELECT * FROM Books WHERE title = :book_title")
     fun checkExistingBook(book_title: String): Boolean
 
+    @Query("SELECT * FROM Books WHERE uid = :id")
+    fun getDetailsOfBook(id: Int) : Books
+
     //Creates a book
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun createBook(book: Books)
@@ -44,6 +49,17 @@ interface BooksDao {
     @Delete
     fun deleteBook(book: Books)
 
+    @Upsert
+    fun upsertBookDetails(bookDetails: Book_Details)
+
+    @Query("DELETE FROM Book_Details WHERE book_id = :book_id")
+    fun deleteBookDetails(book_id: Int)
+
+    @Query("SELECT * FROM Book_Details WHERE book_id = :book_id")
+    fun getExistingBookDetails(book_id: Int) : Book_Details
+
+    @Query("SELECT * FROM Book_Details")
+    fun getAllBookDetails() : List<Book_Details>
 
     //Adds books to playlists
     @Insert
@@ -77,4 +93,7 @@ interface BooksDao {
     //Delete a book in the playlist_books table
     @Query("DELETE FROM PLAYLISTS_BOOKS WHERE playlist_id = :playlist_id and book_id = :book_id")
     fun deleteBookInPlaylist(playlist_id: Int, book_id: Int)
+
+    @Query("DELETE FROM Books WHERE uid = :book_id")
+    fun deleteBooksFromSavedPlaylist(book_id: Int)
 }
