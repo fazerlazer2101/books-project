@@ -68,12 +68,13 @@ fun BookDetailsScreen(
     val bookDetails = booksDao.getExistingBookDetails(book_id)
 
     var status by remember {
-        mutableStateOf("Unread")
+        mutableStateOf("${bookDetails.status}")
     }
     var pageNumber by remember {
         mutableStateOf("${bookDetails.current_page_number}")
     }
 
+    // Inserts or updates the book details for the selected book screened
     fun upsertBookDetails() {
         if (bookDetails != null)
         {
@@ -112,6 +113,7 @@ fun BookDetailsScreen(
                         )
                     },
                     actions = {
+                        // Navigates back to the playlist that the currently selected book is attached to
                         IconButton(onClick = { navController.navigate("3/${playlist_id}") }) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
@@ -121,6 +123,7 @@ fun BookDetailsScreen(
                     }
                 )
             }
+            // Creates a card to showcase the cover of the book
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -148,6 +151,7 @@ fun BookDetailsScreen(
                     )
                 }
             }
+            // Shows the current status of the book based on the page number inputted
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -173,6 +177,7 @@ fun BookDetailsScreen(
                     placeholder = { Text("Page Number...") },
                     onValueChange = {
                         pageNumber = it
+                        // Changes the status based on the number of pages inputted
                         status = if (it == "0") {
                             "Unread"
                         } else if (it == "${book.number_of_pages}") {
@@ -185,6 +190,7 @@ fun BookDetailsScreen(
                 )
                 Text(text = "/${book.number_of_pages}")
             }
+            // Saves by inserting or updating the book details
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

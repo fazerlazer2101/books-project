@@ -61,6 +61,8 @@ fun StatsScreen(
     var readBooks = 0
     var readPages = 0
     var totalPages = 0
+
+    // Loops through all book details and generates some stats
     for (book in allBookDetails) {
         if (book.status == "Read")
         {
@@ -88,6 +90,7 @@ fun StatsScreen(
                 .padding(16.dp)
                 .align(Alignment.Center)
         ) {
+            // Card for read books
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -126,6 +129,8 @@ fun StatsScreen(
                     )
                 }
             }
+
+            // Books for in progress books
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -164,6 +169,8 @@ fun StatsScreen(
                     )
                 }
             }
+
+            // Card for unread books
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -202,6 +209,8 @@ fun StatsScreen(
                     )
                 }
             }
+
+            // Card for pages read
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
