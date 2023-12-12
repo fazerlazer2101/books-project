@@ -459,7 +459,7 @@ fun PlaylistCard(
             .padding(15.dp),
         shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-        onClick = ({ navController.navigate("3/${playlistItem.uid}") })
+        onClick = ({ navController.navigate("${PLAYLIST_DETAILS}/${playlistItem.uid}") })
     ) {
         //text and iamge
         Box(
@@ -508,7 +508,7 @@ fun PlaylistCard(
                                                 //Deletes entry
                                                 booksDao.deletePlaylist(playlistItem)
                                                 //Refresh the composable
-                                                navController.navigate("0")
+                                                navController.navigate(BOOKS_PLAYLIST)
                                                 //Closes
                                                 expanded = false
                                             } else {

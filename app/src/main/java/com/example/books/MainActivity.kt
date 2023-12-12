@@ -49,6 +49,18 @@ class MainActivity : ComponentActivity() {
 }
 //Composables
 
+/**
+ * Routes' Constant Variables
+ *
+ * Routes' constant variables defined to provide consistent and easily maintainable
+ * navigation routes between different pages (activities or fragments) in the app.
+ */
+const val BOOKS_PLAYLIST = "0"
+const val BOOKS_SEARCH = "1"
+const val BOOKS_STATS = "2"
+const val PLAYLIST_DETAILS = "3"
+const val BOOK_DETAILS = "4"
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,19 +75,19 @@ fun bottomNavigationBar()
             selectedIcon = Icons.Filled.Star,
             unselectedIcon = Icons.Outlined.Star,
 
-            route = "0"
+            route = BOOKS_PLAYLIST
         ),
         BottomNavItem(
             title = "Search",
             selectedIcon = Icons.Filled.Search,
             unselectedIcon = Icons.Outlined.Search,
-            route = "1"
+            route = BOOKS_SEARCH
         ),
         BottomNavItem(
             title = "My Stats",
             selectedIcon = Icons.Filled.Info,
             unselectedIcon = Icons.Outlined.Info,
-            route = "2"
+            route = BOOKS_STATS
         )
     )
 
@@ -111,17 +123,17 @@ fun bottomNavigationBar()
     ){innerPadding ->
 
         //Nav hosts assigns routes to the composables
-        NavHost(navController = navController, startDestination = "0"){
-            composable(route = "0"){
+        NavHost(navController = navController, startDestination = BOOKS_PLAYLIST){
+            composable(route = BOOKS_PLAYLIST){
                 PlaylistsScreen(navController = navController, innerPadding )
             }
-            composable(route = "1"){
+            composable(route = BOOKS_SEARCH){
                 SearchScreen(navController)
             }
-            composable(route = "2"){
+            composable(route = BOOKS_STATS){
                 StatsScreen(navController)
             }
-            composable(route = "3/{playlist_id}", arguments = listOf(
+            composable(route = "${PLAYLIST_DETAILS}/{playlist_id}", arguments = listOf(
                 navArgument("playlist_id")
                 {
                     type = NavType.IntType
@@ -131,7 +143,7 @@ fun bottomNavigationBar()
                 val playlistId = requireNotNull(it.arguments?.getInt("playlist_id"))
                 PlaylistDetailsScreen(navController, innerPadding, playlistId)
             }
-            composable(route = "4/{playlist_id}-{book_id}", arguments = listOf(
+            composable(route = "${BOOK_DETAILS}/{playlist_id}-{book_id}", arguments = listOf(
                 navArgument("playlist_id")
                 {
                     type = NavType.IntType
