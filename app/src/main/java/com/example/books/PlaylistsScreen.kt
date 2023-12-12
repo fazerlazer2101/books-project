@@ -3,6 +3,7 @@
 package com.example.books
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -51,7 +52,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -118,7 +122,7 @@ fun PlaylistsScreen(
     db = BookDatabase.getDatabase(context)
     val booksDao = db.BooksDao()
 
-//Top Bar
+    //Top Bar
     Scaffold(modifier = Modifier.padding(innerPadding),
         topBar = {
             TopAppBar(
@@ -140,7 +144,7 @@ fun PlaylistsScreen(
                         getContent.launch(ScanOptions())
                     }) {
                         Icon(
-                            imageVector = Icons.Filled.Call,
+                            imageVector = ImageVector.vectorResource(id = R.drawable.camera),
                             contentDescription = "Scan QR Code"
                         )
                     }

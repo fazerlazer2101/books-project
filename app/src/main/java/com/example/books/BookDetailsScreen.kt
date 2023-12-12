@@ -23,7 +23,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -74,6 +76,9 @@ fun BookDetailsScreen(
         mutableStateOf("${bookDetails.current_page_number}")
     }
 
+    //Determines Intial state of status
+    status =bookDetails.status
+
     fun upsertBookDetails() {
         if (bookDetails != null)
         {
@@ -87,117 +92,117 @@ fun BookDetailsScreen(
             .show()
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .align(Alignment.Center)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = book.title,
-                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp),
-                            maxLines = 1
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = book.title,
+                        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+                        maxLines = 1
+                    )
+                },
+                actions = {
+                    IconButton(onClick = { navController.navigate("3/${playlist_id}") }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back to Playlist"
                         )
-                    },
-                    actions = {
-                        IconButton(onClick = { navController.navigate("3/${playlist_id}") }) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = "Back to Playlist"
-                            )
-                        }
                     }
-                )
-            }
-            Card(
+                }
+            )
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp)
-                    .padding(15.dp),
-                shape = RoundedCornerShape(15.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
+                    .padding(16.dp)
+                    .align(Alignment.Center)
             ) {
+                Card(
+                    modifier = Modifier
+                        .height(250.dp)
+                        .padding(15.dp),
+                    shape = RoundedCornerShape(15.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(225.dp)
+                            .padding(0.dp)
+                            .align(Alignment.CenterHorizontally),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        // Contains image
+                        GlideImage(
+                            modifier = Modifier
+                                .width(150.dp)
+                                .height(225.dp),
+                            model = "https://covers.openlibrary.org/b/ISBN/${book.isbn_10}-M.jpg",
+                            contentDescription = "Book Cover",
+                            contentScale = ContentScale.FillBounds
+                        )
+                    }
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(225.dp)
-                        .padding(0.dp)
-                        .align(Alignment.CenterHorizontally),
-                    horizontalArrangement = Arrangement.Center
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Contains image
-                    GlideImage(
-                        modifier = Modifier
-                            .width(150.dp)
-                            .height(225.dp),
-                        model = "https://covers.openlibrary.org/b/ISBN/${book.isbn_10}-M.jpg",
-                        contentDescription = "Book Cover",
-                        contentScale = ContentScale.FillBounds
-                    )
+                    Text(text = "Status: ${status}")
                 }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "Status: ${status}")
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "Pages Read: ")
-                TextField(
+                Row(
                     modifier = Modifier
-                        .width(200.dp)
-                        .padding(end = 8.dp),
-                    value = pageNumber,
-                    placeholder = { Text("Page Number...") },
-                    onValueChange = {
-                        pageNumber = it
-                        status = if (it == "0") {
-                            "Unread"
-                        } else if (it == "${book.number_of_pages}") {
-                            "Read"
-                        } else {
-                            "In Progress"
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-                Text(text = "/${book.number_of_pages}")
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = { upsertBookDetails() }
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Save")
+                    Text(text = "Pages Read: ")
+                    TextField(
+                        modifier = Modifier
+                            .width(200.dp)
+                            .padding(end = 8.dp),
+                        value = pageNumber,
+                        placeholder = { Text("Page Number...") },
+                        onValueChange = {
+                            pageNumber = it
+                            status = if (it == "0") {
+                                "Unread"
+                            } else if (it == "${book.number_of_pages}") {
+                                "Read"
+                            } else {
+                                "In Progress"
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    Text(text = "/${book.number_of_pages}")
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(
+                        onClick = { upsertBookDetails() }
+                    ) {
+                        Text("Save")
+                    }
                 }
             }
         }
     }
+
+
 }

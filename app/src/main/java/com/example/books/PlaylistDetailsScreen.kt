@@ -107,13 +107,6 @@ fun PlaylistDetailsScreen(
             contentAlignment = Alignment.Center
 
         ){
-            Text(
-                text = "Testing ${param}",
-                color = Color.Black,
-                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                fontWeight = FontWeight.Bold
-            )
-
             Column(modifier = Modifier
                 .fillMaxSize()
 
