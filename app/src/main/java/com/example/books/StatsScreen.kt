@@ -44,6 +44,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.books.database.BookDatabase
 
+
+// Displaying Stats for books
+
 private lateinit var db: BookDatabase
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
