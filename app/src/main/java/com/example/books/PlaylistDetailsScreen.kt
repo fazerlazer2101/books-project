@@ -89,7 +89,7 @@ fun PlaylistDetailsScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = { navController.navigate("0") }) {
+                    IconButton(onClick = { navController.navigate(BOOKS_PLAYLIST) }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Back to Playlists"
@@ -159,7 +159,7 @@ fun booksCards(
                 .padding(15.dp),
             shape = RoundedCornerShape(15.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
-            onClick = ({navController.navigate("4/${playList_id}-${book.uid}")})
+            onClick = ({navController.navigate("${BOOK_DETAILS}/${playList_id}-${book.uid}")})
         ) {
             Row(modifier = Modifier
                 .padding(0.dp)) {
@@ -243,7 +243,7 @@ fun booksCards(
                                                         booksDao.deleteBookInPlaylist(playlist_id = playList_id, book_id = book.uid )
                                                     }
 
-                                                    navController.navigate("3/${playList_id}")
+                                                    navController.navigate("${PLAYLIST_DETAILS}/${playList_id}")
                                                 }
                                             },
                                         ) {

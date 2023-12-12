@@ -103,7 +103,7 @@ fun BookDetailsScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = { navController.navigate("3/${playlist_id}") }) {
+                    IconButton(onClick = { navController.navigate("${PLAYLIST_DETAILS}/${playlist_id}") }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Back to Playlist"
